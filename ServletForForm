@@ -1,0 +1,100 @@
+package myServlet;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Enumeration;
+@WebServlet(name = "", urlPatterns ={})
+public class HelloServlet extends HttpServlet {
+
+    private static final long serialVersionUID = 1L;
+    @Override
+    public void init() throws ServletException {
+        System.out.println("==== init without parameters====");
+        super.init();
+    }
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        System.out.println("==== init with parameters====");
+
+        super.init(config);
+    }
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.service(req, resp);
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = resp.getWriter();
+        String title = "使用 GET 方法读取表单数据";
+        String name = new String(req.getParameter("name").getBytes("ISO8859-1"),"UTF-8");
+        String docType =  "<!DOCTYPE html> \n";
+        out.println(docType +
+                "<html>\n"+
+                "<head><title>" + title +"</title></head>"+
+                "<body bgcolor=\"#f0f0f0\">\n"+
+                "<h1 align=\"center\">"+title+"</h1>\n"+
+                "<ul>\n"+
+                "<li> <b> 站点名</b>:"+
+                name+"\n"+
+                "<li> <b> url </b>:" + req.getParameter("nickname")+"\n"+
+                "</body></html>"
+
+        );
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = resp.getWriter();
+        String title = "读取表单所有数据";
+        String docType = "<!doctype html public \"-//w3c//dtd html 4.0 " + "transitional//en\">\n";
+        out.println(docType+
+                "<html>\n"+
+                "<head><meta charset=\"UTF-8\""+
+                "<title>" + title + "</title></head>\n"+
+                "<body bgcolor=\"#f0f0f0\">\n"+
+                "<table width=\"100%\" border=\"1\" align=\"center\">\n"+
+                "<tr bgcolor=\"#949494\">\n>"+
+                "<th>参数名称</th><th>参数值</th>"+
+                "</tr>\n"
+        );
+        Enumeration paramNames = req.getParameterNames();
+        while(paramNames.hasMoreElements()){
+            String name = (String)paramNames.nextElement();
+            out.println("<tr><td>" + name + "</td>\n");
+            String[] paramValues = req.getParameterValues(name);
+            // 读取单个数据
+            if( paramValues.length == 1){
+                String paramValue = paramValues[0];
+                if (paramValue.length() == 0) {
+                    out.println("<td><i>空值</i></td>");
+                }else{
+                    out.println("<td>" + paramValue + "</td>");
+                }
+            }else{ //读取多个数据
+                out.println("<td><ul>");
+                for (int i = 0; i < paramValues.length; i++) {
+                    out.println("<li>" + paramValues[i]);
+                }
+                out.println("</ul></td>");
+            }
+            out.println("</tr>");
+        }
+        out.println("\n</table></body></html>");
+    }
+
+    @Override
+    public void destroy(){
+        System.out.println("==== destroy ====");
+        super.destroy();
+    }
+
+}
